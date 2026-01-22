@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Numocity | User Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <header class="navbar">
+            <div class="logo">
+                <span class="logo-icon">⚡</span> Numocity
+            </div>
+            <nav>
+                <a href="/dashboard" class="active">Stations</a>
+                <a href="/history">My History</a>
+                <a href="/wallet">Wallet</a>
+            </nav>
+            <div class="user-profile">
+                <span style="margin-right: 15px; color: var(--primary); font-weight: 600;">${{
+                    "%.2f"|format(current_user.wallet_balance) }}</span>
+                <span style="margin-right: 15px; color: var(--text-muted); font-size: 0.9rem;">Hello, {{
+                    current_user.username }}</span>
+                <a href="/logout" class="btn-sm">Logout</a>
+            </div>
+        </header>
+
+        <main class="dashboard">
+            <section class="hero-section">
+                <h1>Find & Charge</h1>
+                <p>Locate available stations near you.</p>
+            </section>
+
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div class="alert success" style="margin-bottom: 20px;">{{ messages[0] }}</div>
+            {% endif %}
+            {% endwith %}
+
+            <div class="stations-grid">
+                {% for station in stations %}
+                <div class="station-card status-{{ station.status }}">
+                    <div class="card-header">
+                        <div>
+                            <div class="station-name">{{ station.name }}</div>
+                            <div class="station-type">{{ station.type }}</div>
+                        </div>
+                        <div class="status-container">
+                            <span class="status-badge">{{ station.status }}</span>
+                        </div>
+                    </div>
+                    <div class="card-meta">
+                        <span class="power-info">⚡ {{ station.power }}</span>
+
+                        {% if station.status == 'Available' %}
+                        <a href="/charge/{{ station.id }}" class="action-btn">Start Charging &rarr;</a>
+                        {% else %}
+                        <span class="action-btn disabled">Unavailable</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

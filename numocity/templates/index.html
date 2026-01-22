@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Numocity | EV Energy Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> <!-- Placeholder for icons if needed, or use SVG -->
+</head>
+<body>
+    <div class="app-container">
+        <header class="navbar">
+            <div class="logo">
+                <span class="logo-icon">⚡</span> Numocity
+            </div>
+            <nav>
+                <a href="#" class="active">Dashboard</a>
+                <a href="#">Map View</a>
+                <a href="#">Analytics</a>
+                <a href="#">Settings</a>
+            </nav>
+            <div class="user-profile">
+                <div class="avatar">AD</div>
+            </div>
+        </header>
+
+        <main class="dashboard">
+            <section class="hero-section">
+                <h1>Smart Charging Network</h1>
+                <p>Real-time monitoring of your EV infrastructure.</p>
+            </section>
+
+            <section class="stats-grid">
+                <div class="stat-card">
+                    <h3>Active Sessions</h3>
+                    <div class="value">24</div>
+                    <div class="trend positive">+12%</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Energy Delivered</h3>
+                    <div class="value">4.2 MWh</div>
+                    <div class="trend positive">+5%</div>
+                </div>
+                <div class="stat-card">
+                    <h3>CO2 Saved</h3>
+                    <div class="value">1,240 kg</div>
+                    <div class="trend">Total</div>
+                </div>
+            </section>
+
+            <section class="stations-section">
+                <div class="section-header">
+                    <h2>Live Stations Status</h2>
+                    <button class="refresh-btn" id="refreshBtn">Refresh Data</button>
+                </div>
+                <div class="stations-grid" id="stationsGrid">
+                    <!-- Stations will be injected here via JS -->
+                    <div class="loading">Loading network data...</div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

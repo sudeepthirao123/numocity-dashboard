@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Numocity | Charging History</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <header class="navbar">
+            <div class="logo">
+                <span class="logo-icon">⚡</span> Numocity
+            </div>
+            <nav>
+                <a href="/dashboard">Stations</a>
+                <a href="/history" class="active">My History</a>
+                <a href="/wallet">Wallet</a>
+            </nav>
+            <div class="user-profile">
+                <span style="margin-right: 15px; color: var(--primary); font-weight: 600;">${{
+                    "%.2f"|format(current_user.wallet_balance) }}</span>
+                <span style="margin-right: 15px; color: var(--text-muted); font-size: 0.9rem;">Hello, {{
+                    current_user.username }}</span>
+                <a href="/logout" class="btn-sm">Logout</a>
+            </div>
+        </header>
+
+        <main class="dashboard">
+            <section class="hero-section">
+                <h1>Charging History</h1>
+                <p>View your past charging sessions and payments.</p>
+            </section>
+
+            <div class="list-view">
+                <div class="list-header glass">
+                    <span>Date</span>
+                    <span>Station</span>
+                    <span>Energy</span>
+                    <span>Cost</span>
+                    <span>Status</span>
+                </div>
+                {% for tx in transactions %}
+                <div class="list-item glass">
+                    <span>{{ tx.timestamp.strftime('%Y-%m-%d %H:%M') }}</span>
+                    <span class="station-name">{{ tx.station_name }}</span>
+                    <span>{{ tx.energy }}</span>
+                    <span style="color: var(--status-offline)">-${{ "%.2f"|format(tx.amount) }}</span>
+                    <span><span class="status-badge status-Available">Success</span></span>
+                </div>
+                {% else %}
+                <div class="loading">No transactions found. Start charging to see history!</div>
+                {% endfor %}
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>
