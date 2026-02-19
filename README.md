@@ -15,7 +15,7 @@ A modern, responsive EV charging station management dashboard, refactored for cl
 2. Go to **Settings** > **Pages**.
 3. Select **Source** > **Deploy from a branch**.
 4. Select **Branch** > `main` (or `master`) and folder `/` (root).
-5. Save. Your site will be live in a few minutes!
+5. Save. Your site will be live in a few minutes.
 
 ## Demo Credentials
 Since this is a client-side app, you can register any new user.
