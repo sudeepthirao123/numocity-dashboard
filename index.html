@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Numocity | EV Charging Network</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="navbar">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">⚡</span> Numocity
+            </a>
+        </header>
+
+        <div class="auth-wrapper animate-fade-in">
+            <div class="auth-card glass" id="loginForm">
+                <div style="margin-bottom: 2rem;">
+                    <span style="font-size: 3rem;">⚡</span>
+                </div>
+                <h2>Welcome Back</h2>
+                <p>Sign in to manage your EV charging</p>
+                
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="loginUsername" class="form-control" required placeholder="user or admin">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="loginPassword" class="form-control" required placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="btn-primary" style="width: 100%;">Sign In</button>
+                </form>
+
+                <div style="margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-muted);">
+                    New directly to the network? <a href="#" onclick="toggleAuth('register')" style="color: var(--primary);">Create Account</a>
+                </div>
+                
+                <div style="margin-top: 2rem; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; font-size: 0.8rem; text-align: left;">
+                    <strong>Demo Credentials:</strong><br>
+                    User: user / password<br>
+                    Admin: admin / admin
+                </div>
+            </div>
+
+            <div class="auth-card glass" id="registerForm" style="display: none;">
+                <div style="margin-bottom: 2rem;">
+                    <span style="font-size: 3rem;">🌱</span>
+                </div>
+                <h2>Join Numocity</h2>
+                <p>Start charging smarter today</p>
+                
+                <form onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="regUsername" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="regPassword" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Role</label>
+                        <select id="regRole" class="form-control">
+                            <option value="user">EV Driver</option>
+                            <option value="operator">Station Operator</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-primary" style="width: 100%;">Create Account</button>
+                </form>
+
+                <div style="margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-muted);">
+                    Already have an account? <a href="#" onclick="toggleAuth('login')" style="color: var(--primary);">Sign In</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/core.js"></script>
+    <script>
+        // Check if already logged in
+        const currentUser = app.getCurrentUser();
+        if (currentUser) {
+            window.location.href = currentUser.role === 'operator' ? 'operator.html' : 'dashboard.html';
+        }
+
+        function toggleAuth(mode) {
+            document.getElementById('loginForm').style.display = mode === 'login' ? 'block' : 'none';
+            document.getElementById('registerForm').style.display = mode === 'register' ? 'block' : 'none';
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('loginUsername').value;
+            const p = document.getElementById('loginPassword').value;
+            
+            const result = app.login(u, p);
+            if (result.success) {
+                window.location.href = result.role === 'operator' ? 'operator.html' : 'dashboard.html';
+            } else {
+                showToast(result.message, 'error');
+            }
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const u = document.getElementById('regUsername').value;
+            const p = document.getElementById('regPassword').value;
+            const r = document.getElementById('regRole').value;
+            
+            const result = app.register(u, p, r);
+            if (result.success) {
+                showToast('Account created! Redirecting...');
+                setTimeout(() => {
+                    window.location.href = result.role === 'operator' ? 'operator.html' : 'dashboard.html';
+                }, 1000);
+            } else {
+                showToast(result.message, 'error');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operator | Numocity</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <header class="navbar">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">⚡</span> Numocity <span
+                    style="background:var(--primary); color:#000; font-size:0.7rem; padding:2px 6px; border-radius:4px; margin-left:8px;">ADMIN</span>
+            </a>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <button id="exportBtn" class="btn-primary" style="font-size: 0.9rem;">Export CSV</button>
+                <button onclick="app.logout()" class="btn-outline" style="padding: 0.5rem 1rem;">Logout</button>
+            </div>
+        </header>
+
+        <main>
+            <section style="margin-bottom: 2rem;">
+                <h1>Network Overview</h1>
+                <div class="dashboard-grid" style="margin-top: 1rem;">
+                    <div class="stat-card glass">
+                        <h3>Total Stations</h3>
+                        <div class="value" id="statTotal">-</div>
+                    </div>
+                    <div class="stat-card glass">
+                        <h3>Active Sessions</h3>
+                        <div class="value" id="statActive">-</div>
+                    </div>
+                    <div class="stat-card glass">
+                        <h3>Offline Units</h3>
+                        <div class="value" id="statOffline" style="color: var(--status-offline);">-</div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="dashboard-grid" style="grid-template-columns: 2fr 1fr;">
+                <section>
+                    <div class="section-header">
+                        <h2>Analytics</h2>
+                    </div>
+                    <div class="glass" style="padding: 1.5rem; border-radius: 16px; height: 350px;">
+                        <canvas id="analyticsChart"></canvas>
+                    </div>
+                </section>
+
+                <section>
+                    <div class="section-header">
+                        <h2>Station Control</h2>
+                    </div>
+                    <div class="table-container glass">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Status</th>
+                                    <th>Power</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="stationListBody">
+                                <!-- JS injected -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="assets/js/core.js"></script>
+    <script src="assets/js/operator.js"></script>
+</body>
+
+</html>
