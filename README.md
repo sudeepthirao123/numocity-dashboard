@@ -1,9 +1,15 @@
 # ⚡ Numocity Dashboard
 > **Next-Gen EV Charging Station Management System**
 
+<<<<<<< HEAD
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Status](https://img.shields.io/badge/status-production_ready-success.svg)
 ![Version](https://img.shields.io/badge/version-2.0.0-purple.svg)
+=======
+https://sudeepthirao123.github.io/numocity-dashboard/
+
+A modern, responsive EV charging station management dashboard, refactored for client-side execution.
+>>>>>>> 87189aecab58af440abe3e063b31d757aa676d60
 
 Numocity is a modern, high-performance dashboard designed for monitoring and managing Electric Vehicle (EV) charging infrastructure. It provides real-time insights into station status, energy consumption, and user transactions.
 
