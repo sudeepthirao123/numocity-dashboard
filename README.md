@@ -29,4 +29,3 @@ Pre-seeded accounts:
 - `dashboard.html`: User Interface
 - `operator.html`: Admin Interface
 - `assets/`: CSS, JS, Images
-- `legacy_numocity/`: Archived Python/Flask backend

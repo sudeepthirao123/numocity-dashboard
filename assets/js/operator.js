@@ -1,8 +1,17 @@
 /**
- * Operator Dashboard Logic
+ * Operator Dashboard Logic (SQLite Edition)
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Wait for DB
+    if (app.dbReady) {
+        initOperatorDashboard();
+    } else {
+        document.addEventListener('dbReady', initOperatorDashboard);
+    }
+});
+
+function initOperatorDashboard() {
     const user = app.requireAuth('operator');
     if (!user) return;
 
@@ -13,14 +22,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Event Listeners
     document.getElementById('exportBtn').addEventListener('click', exportCSV);
-});
+}
 
 function loadOverview() {
-    const stations = app.getStations();
-
-    const total = stations.length;
-    const active = stations.filter(s => s.status === 'Occupied').length;
-    const offline = stations.filter(s => s.status === 'Offline').length;
+    // Use SQL COUNT for efficiency
+    const total = dbManager.query("SELECT COUNT(*) as count FROM stations")[0].count;
+    const active = dbManager.query("SELECT COUNT(*) as count FROM stations WHERE status = 'Occupied'")[0].count;
+    const offline = dbManager.query("SELECT COUNT(*) as count FROM stations WHERE status = 'Offline'")[0].count;
 
     document.getElementById('statTotal').textContent = total;
     document.getElementById('statActive').textContent = active;
@@ -28,7 +36,7 @@ function loadOverview() {
 }
 
 function loadStationList() {
-    const stations = app.getStations();
+    const stations = dbManager.query("SELECT * FROM stations");
     const container = document.getElementById('stationListBody');
     container.innerHTML = '';
 
@@ -50,11 +58,11 @@ function loadStationList() {
 }
 
 function toggleStation(id) {
-    const stations = app.getStations();
-    const station = stations.find(s => s.id === id);
-
+    // Fetch current status first
+    const station = dbManager.query("SELECT status FROM stations WHERE id = ?", [id])[0];
     const newStatus = station.status === 'Offline' ? 'Available' : 'Offline';
-    app.updateStation(id, { status: newStatus });
+
+    dbManager.run("UPDATE stations SET status = ? WHERE id = ?", [newStatus, id]);
 
     loadOverview();
     loadStationList();
@@ -62,17 +70,21 @@ function toggleStation(id) {
 }
 
 function initCharts() {
-    const txs = app.getTransactions();
+    // Analytical Query: Group by station name and sum energy
+    // Note: energy is stored as "45 kWh" string, so SQL SUM won't work perfectly without parsing.
+    // For specific SQLite requirements we can use substr, but for safety with the string format, 
+    // we'll fetch fields and process in JS, OR if we had stored energy as REAL it would be better.
+    // Let's do hybrid: Fetch all transactions.
 
-    // Process data for chart
-    // Group by station name
+    const txs = dbManager.query("SELECT station_name, energy FROM transactions");
+
     const stationEnergy = {};
     txs.forEach(t => {
         const energyVal = parseFloat(t.energy); // "45 kWh" -> 45
-        if (!stationEnergy[t.stationName]) {
-            stationEnergy[t.stationName] = 0;
+        if (!stationEnergy[t.station_name]) {
+            stationEnergy[t.station_name] = 0;
         }
-        stationEnergy[t.stationName] += energyVal;
+        stationEnergy[t.station_name] += energyVal;
     });
 
     const labels = Object.keys(stationEnergy);
@@ -114,14 +126,14 @@ function initCharts() {
 }
 
 function exportCSV() {
-    const txs = app.getTransactions();
+    const txs = dbManager.query("SELECT * FROM transactions");
     if (txs.length === 0) {
         showToast('No data to export', 'error');
         return;
     }
 
     const headers = ['ID', 'UserID', 'Station', 'Amount', 'Energy', 'Timestamp'];
-    const rows = txs.map(t => [t.id, t.userId, t.stationName, t.amount, t.energy, t.timestamp]);
+    const rows = txs.map(t => [t.id, t.user_id, t.station_name, t.amount, t.energy, t.timestamp]);
 
     let csvContent = "data:text/csv;charset=utf-8,"
         + headers.join(",") + "\n"

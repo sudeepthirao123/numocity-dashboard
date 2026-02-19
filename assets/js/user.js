@@ -1,8 +1,17 @@
 /**
- * User Dashboard Logic
+ * User Dashboard Logic (SQLite Edition)
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Wait for DB
+    if (app.dbReady) {
+        initUserDashboard();
+    } else {
+        document.addEventListener('dbReady', initUserDashboard);
+    }
+});
+
+function initUserDashboard() {
     const user = app.requireAuth('user');
     if (!user) return;
 
@@ -16,15 +25,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Event Listeners
     document.getElementById('addFundsBtn').addEventListener('click', addFunds);
-});
+}
 
-function updateWalletUI() {
-    const user = app.getCurrentUser();
-    document.getElementById('userWallet').textContent = app.formatCurrency(user.wallet);
+async function updateWalletUI() {
+    const user = await app.refreshUserSession(); // Get fresh wallet balance from DB
+    if (user) {
+        document.getElementById('userWallet').textContent = app.formatCurrency(user.wallet);
+    }
 }
 
 function loadStations() {
-    const stations = app.getStations();
+    const stations = dbManager.query("SELECT * FROM stations");
     const grid = document.getElementById('stationsGrid');
     grid.innerHTML = '';
 
@@ -62,10 +73,12 @@ function loadStations() {
 
 function startCharging(stationId) {
     const user = app.getCurrentUser();
-    const stations = app.getStations();
-    const station = stations.find(s => s.id === stationId);
 
-    // Simulation cost
+    // Get fresh station data
+    const stations = dbManager.query("SELECT * FROM stations WHERE id = ?", [stationId]);
+    if (stations.length === 0) return;
+    const station = stations[0];
+
     const cost = 15.50;
 
     if (user.wallet < cost) {
@@ -74,41 +87,52 @@ function startCharging(stationId) {
     }
 
     if (confirm(`Start charging at ${station.name} for ${app.formatCurrency(cost)}?`)) {
-        // 1. Deduct Wallet
-        user.wallet -= cost;
-        app.updateUser(user);
-        updateWalletUI();
+        // SQL Transaction Simulation
+        try {
+            // 1. Deduct Wallet
+            dbManager.run("UPDATE users SET wallet = wallet - ? WHERE id = ?", [cost, user.id]);
 
-        // 2. Update Station Status
-        app.updateStation(stationId, { status: 'Occupied' });
+            // 2. Update Station Status
+            dbManager.run("UPDATE stations SET status = 'Occupied' WHERE id = ?", [stationId]);
 
-        // 3. Add Transaction
-        app.addTransaction({
-            userId: user.id,
-            stationName: station.name,
-            amount: cost,
-            energy: `${Math.floor(Math.random() * 30) + 10} kWh`
-        });
+            // 3. Add Transaction
+            const energy = `${Math.floor(Math.random() * 30) + 10} kWh`;
+            const timestamp = new Date().toISOString();
+            dbManager.run(
+                "INSERT INTO transactions (user_id, station_name, amount, energy, timestamp) VALUES (?, ?, ?, ?, ?)",
+                [user.id, station.name, cost, energy, timestamp]
+            );
 
-        // 4. Refresh UI
-        loadStations();
-        loadHistory();
-        showToast(`Charging started! ${app.formatCurrency(cost)} deducted.`);
+            // 4. Global Save is handled by dbManager.run() automatically
+
+            // 5. Refresh UI
+            updateWalletUI(); // This will fetch the new balance
+            loadStations();
+            loadHistory();
+            showToast(`Charging started! ${app.formatCurrency(cost)} deducted.`);
+        } catch (e) {
+            console.error(e);
+            showToast("Transaction failed", "error");
+        }
     }
 }
 
 function addFunds() {
     const amount = 50.00;
     const user = app.getCurrentUser();
-    user.wallet += amount;
-    app.updateUser(user);
+
+    dbManager.run("UPDATE users SET wallet = wallet + ? WHERE id = ?", [amount, user.id]);
+
     updateWalletUI();
     showToast(`Added ${app.formatCurrency(amount)} to wallet!`);
 }
 
 function loadHistory() {
     const user = app.getCurrentUser();
-    const txs = app.getTransactions(user.id);
+    // Complex Query JOIN not strictly needed since we denormalized station_name in transactions for simplicity,
+    // but we can select directly.
+    const txs = dbManager.query("SELECT * FROM transactions WHERE user_id = ? ORDER BY timestamp DESC", [user.id]);
+
     const container = document.getElementById('historyList');
 
     if (txs.length === 0) {
@@ -123,7 +147,7 @@ function loadHistory() {
         const date = new Date(tx.timestamp).toLocaleDateString();
         html += `
             <tr>
-                <td>${tx.stationName}</td>
+                <td>${tx.station_name}</td>
                 <td>${date}</td>
                 <td>${tx.energy}</td>
                 <td style="font-weight:600; color:var(--primary);">${app.formatCurrency(tx.amount)}</td>

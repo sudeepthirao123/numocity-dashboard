@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
+
 <body>
     <div class="app-container">
         <header class="navbar">
@@ -22,7 +24,7 @@
                 </div>
                 <h2>Welcome Back</h2>
                 <p>Sign in to manage your EV charging</p>
-                
+
                 <form onsubmit="handleLogin(event)">
                     <div class="form-group">
                         <label>Username</label>
@@ -36,10 +38,12 @@
                 </form>
 
                 <div style="margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-muted);">
-                    New directly to the network? <a href="#" onclick="toggleAuth('register')" style="color: var(--primary);">Create Account</a>
+                    New directly to the network? <a href="#" onclick="toggleAuth('register')"
+                        style="color: var(--primary);">Create Account</a>
                 </div>
-                
-                <div style="margin-top: 2rem; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; font-size: 0.8rem; text-align: left;">
+
+                <div
+                    style="margin-top: 2rem; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; font-size: 0.8rem; text-align: left;">
                     <strong>Demo Credentials:</strong><br>
                     User: user / password<br>
                     Admin: admin / admin
@@ -52,7 +56,7 @@
                 </div>
                 <h2>Join Numocity</h2>
                 <p>Start charging smarter today</p>
-                
+
                 <form onsubmit="handleRegister(event)">
                     <div class="form-group">
                         <label>Username</label>
@@ -73,12 +77,15 @@
                 </form>
 
                 <div style="margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-muted);">
-                    Already have an account? <a href="#" onclick="toggleAuth('login')" style="color: var(--primary);">Sign In</a>
+                    Already have an account? <a href="#" onclick="toggleAuth('login')"
+                        style="color: var(--primary);">Sign In</a>
                 </div>
             </div>
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+    <script src="assets/js/database.js"></script>
     <script src="assets/js/core.js"></script>
     <script>
         // Check if already logged in
@@ -96,7 +103,7 @@
             e.preventDefault();
             const u = document.getElementById('loginUsername').value;
             const p = document.getElementById('loginPassword').value;
-            
+
             const result = app.login(u, p);
             if (result.success) {
                 window.location.href = result.role === 'operator' ? 'operator.html' : 'dashboard.html';
@@ -110,7 +117,7 @@
             const u = document.getElementById('regUsername').value;
             const p = document.getElementById('regPassword').value;
             const r = document.getElementById('regRole').value;
-            
+
             const result = app.register(u, p, r);
             if (result.success) {
                 showToast('Account created! Redirecting...');
@@ -123,4 +130,5 @@
         }
     </script>
 </body>
+
 </html>
