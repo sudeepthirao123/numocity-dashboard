@@ -1,5 +1,7 @@
 # Numocity Dashboard (Static Edition)
 
+https://sudeepthirao123.github.io/numocity-dashboard/
+
 A modern, responsive EV charging station management dashboard, refactored for client-side execution.
 
 ## Features
