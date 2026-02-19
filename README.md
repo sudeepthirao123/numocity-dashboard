@@ -1,6 +1,6 @@
 # Numocity Dashboard (Static Edition)
 
-A modern, responsive EV charging station management dashboard, refactored for client-side execution (GitHub Pages compatible).
+A modern, responsive EV charging station management dashboard, refactored for client-side execution.
 
 ## Features
 - **User Dashboard**: View stations, start charging, manage wallet, view history.
